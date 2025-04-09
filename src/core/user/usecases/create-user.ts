@@ -1,5 +1,5 @@
-import { sendWelcomeEmail } from "../../../application/services/mailer";
-import { UserRepository } from "../../interfaces/user-repository";
+import { sendWelcomeEmail } from "../../../application/services/mailer/mailer-service";
+import { UserRepository } from "../interfaces/user-repository";
 import { User } from "../entities/user";
 
 export class CreateUser {
@@ -9,7 +9,7 @@ export class CreateUser {
     const user = new User("generated-id", data.name, data.email);
     if (!user.isValidEmail()) throw new Error("Invalid email");
 
-    const savedUser = this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
 
     sendWelcomeEmail({ recipient: savedUser.email, firstName: savedUser.name });
   }
