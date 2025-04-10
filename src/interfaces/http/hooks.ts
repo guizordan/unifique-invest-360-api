@@ -1,18 +1,39 @@
-import { isHttpErrorCode } from "../../helpers/index.js";
+import { FastifyReply, FastifyRequest } from "fastify";
 
-export function handleSend(req, reply, payload, done) {
-  let parsedPayload;
+export function isHttpErrorCode(code: number) {
+  return code >= 400 && code <= 599;
+}
+
+interface AppError extends Error {
+  statusCode?: number;
+  errors?: Array<{ message: string }>;
+}
+
+export function handleSend(
+  req: FastifyRequest,
+  reply: FastifyReply,
+  payload: unknown
+): unknown {
+  if (typeof payload !== "string") {
+    return payload as string;
+  }
+
+  let parsedPayload: any;
 
   try {
     parsedPayload = JSON.parse(payload);
-  } catch (error) {
-    return done(null, payload);
+  } catch {
+    return payload;
   }
 
   const { success = true, message, error, data } = parsedPayload;
   const statusCode = reply.statusCode;
 
-  const formattedResponse = {
+  const formattedResponse: {
+    success: boolean;
+    data?: unknown;
+    messages: string[];
+  } = {
     success: Boolean(success),
     data,
     messages: [],
@@ -24,7 +45,7 @@ export function handleSend(req, reply, payload, done) {
       .split("Validation error: ")
       .filter((item) => item.trim() !== "");
 
-    formattedResponse.messages = [...formattedResponse.messages, ...messages];
+    formattedResponse.messages.push(...messages);
   }
 
   if (!success || isHttpErrorCode(statusCode)) {
@@ -37,14 +58,18 @@ export function handleSend(req, reply, payload, done) {
       success: false,
     };
 
-    return done(null, JSON.stringify(errorResponse));
+    return JSON.stringify(errorResponse);
   }
 
-  return done(null, JSON.stringify(formattedResponse));
+  return JSON.stringify(formattedResponse);
 }
 
-export function handleError(ex, req, reply) {
-  const { statusCode, message, errors = [] } = ex;
+export function handleError(
+  err: AppError,
+  req: FastifyRequest,
+  reply: FastifyReply
+): void {
+  const { statusCode, message, errors = [] } = err;
 
   const errorResponse = {
     message:

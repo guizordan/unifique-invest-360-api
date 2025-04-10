@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import config from "./config/sequelize.config";
-import { initUserModel } from "./models/User.model";
+import { initUserModel } from "./models/user.model";
 
 const env = process.env.NODE_ENV || "development";
 const dbConfig = config[env as keyof typeof config];

@@ -26,18 +26,6 @@ export class User extends Model<
   static associate(models: any) {
     this.hasMany(models.Order, { foreignKey: "userId" });
   }
-
-  // Virtual field
-  // get fullName(): string {
-  //   return `${this.firstName} ${this.lastName}`;
-  // }
-
-  toJSON() {
-    const attributes: any = { ...this.get() };
-    // attributes.fullName = this.fullName;
-    delete attributes.password; // Remove password from output
-    return attributes;
-  }
 }
 
 // Sequelize init function
@@ -110,9 +98,6 @@ export function initUserModel(sequelize: Sequelize): typeof User {
 
           this.setDataValue("password", value);
         },
-      },
-      bankAccount: {
-        type: DataTypes.STRING,
       },
       role: {
         type: DataTypes.ENUM("admin", "backoffice", "customer"),

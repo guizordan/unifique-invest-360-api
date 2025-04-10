@@ -2,7 +2,33 @@ import { cookieSettings } from "../../../consts/index.js";
 import { sendPasswordRecoveryEmail } from "../helpers/mailer.js";
 import { PasswordRecovery, User } from "../../models/index.js";
 
-export async function login(req, reply) {
+import { FastifyRequest, FastifyReply } from "fastify";
+
+interface Session {
+  encryptedSessionId: string;
+}
+
+interface User {
+  email: string;
+  fullName: string;
+  bankAccount?: string;
+  role: "admin" | "backoffice" | "customer";
+}
+
+interface LoginRequestBody {
+  keepAlive?: boolean;
+}
+
+interface LoginRequest extends FastifyRequest {
+  session: Session;
+  user: User;
+  body: LoginRequestBody;
+}
+
+export async function login(
+  req: LoginRequest,
+  reply: FastifyReply
+): Promise<void> {
   const {
     session: { encryptedSessionId },
     body: { keepAlive = true },

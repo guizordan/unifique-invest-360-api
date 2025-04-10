@@ -1,56 +1,35 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
 import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 
-import { translate, translateQtd } from "./index.js";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const WEB_URL = process.env.WEB_URL
-  ? process.env.WEB_URL
-  : "https://test.ferticred.com.br/";
+const WEB_URL = process.env.WEB_URL || "https://test.unifique.com.br/";
 
 const ADMIN_SENDER =
   process.env.NODE_ENV === "prod"
-    ? "admin@ferticred.com.br"
-    : "admin@test.ferticred.com.br";
+    ? "admin@unifique.com.br"
+    : "admin@test.unifique.com.br";
 
 const mailerSend = new MailerSend({
-  apiKey: process.env.MAILER_KEY,
+  apiKey: process.env.MAILER_KEY || "",
 });
 
-export async function sendOrderCreatedEmail({ order, user }) {
-  const { product, quantity } = order;
-  const { email, fullName } = user;
-
-  const translatedProduct = translate(product);
-  const translatedQtd = translateQtd({ quantity, product });
-
-  const replacements = {
-    WEB_URL,
-    Name: fullName,
-    Product: translatedProduct,
-    Quantity: translatedQtd,
-    MyOrdersLink: WEB_URL + "dashboard/minhas-ordens",
-  };
-
-  const replacedTemplate = replacePlaceholders(
-    "create-order-email",
-    replacements
-  );
-
-  const subject = `Nova ordem em ${translatedProduct} foi enviada`;
-
-  const emailParams = createEmailParams({
-    recipient: email,
-    subject,
-    htmlContent: replacedTemplate,
-  });
-
-  await sendOrLogEmail(emailParams);
+interface EmailInput {
+  recipient: string;
+  subject: string;
+  htmlContent: string;
 }
 
-function createEmailParams({ recipient, subject, htmlContent }) {
-  const sentFrom = new Sender(ADMIN_SENDER, "Ferticred");
+export function createEmailParams({
+  recipient,
+  subject,
+  htmlContent,
+}: EmailInput): EmailParams {
+  const sentFrom = new Sender(ADMIN_SENDER, "unifique");
   const recipients = [new Recipient(recipient)];
 
   return new EmailParams()
@@ -61,34 +40,41 @@ function createEmailParams({ recipient, subject, htmlContent }) {
     .setHtml(htmlContent);
 }
 
-async function sendOrLogEmail(emailParams) {
+export async function sendOrLogEmail(emailParams: EmailParams): Promise<void> {
   if (process.env.NODE_ENV === "prod") {
-    await mailerSend.email.send(emailParams);
+    try {
+      await mailerSend.email.send(emailParams);
+    } catch (error) {
+      console.error("Failed to send email:", error);
+      throw error;
+    }
   } else {
-    console.log("Email would be sent with the following parameters:");
+    console.log("📧 Email preview (not sent in non-prod env):");
     console.log("From:", emailParams.from.email);
-    console.log(
-      "To:",
-      emailParams.to.map((r) => r.email)
-    );
+    console.log("To:", emailParams.to.map((r) => r.email).join(", "));
     console.log("Subject:", emailParams.subject);
     console.log("HTML Content:", emailParams.html);
   }
 }
 
-function replacePlaceholders(emailTemplateName, replacements) {
-  const currentDir = path.dirname(new URL(import.meta.url).pathname);
+export function replacePlaceholders(
+  emailTemplateName: string,
+  replacements: Record<string, string>
+): string {
   const emailTemplatePath = path.join(
-    currentDir,
+    __dirname,
     "..",
     "assets",
     `${emailTemplateName}.html`
   );
+
+  if (!fs.existsSync(emailTemplatePath)) {
+    throw new Error(`Email template not found: ${emailTemplatePath}`);
+  }
+
   const template = fs.readFileSync(emailTemplatePath, "utf-8");
 
-  let result = template;
-  for (const [placeholder, value] of Object.entries(replacements)) {
-    result = result.replace(new RegExp(`\\[${placeholder}\\]`, "g"), value);
-  }
-  return result;
+  return Object.entries(replacements).reduce((result, [placeholder, value]) => {
+    return result.replace(new RegExp(`\\[${placeholder}\\]`, "g"), value);
+  }, template);
 }

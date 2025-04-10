@@ -1,53 +1,55 @@
-/** @type {import('sequelize-cli').Migration} */
+import { QueryInterface, DataTypes } from "sequelize";
 
-module.exports = {
-  async up(queryInterface, Sequelize) {
+/** @type {import('sequelize-cli').Migration} */
+export default {
+  async up(queryInterface: QueryInterface): Promise<void> {
     await queryInterface.createTable("Users", {
       id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.CHAR(36),
+        type: DataTypes.CHAR(36),
       },
       email: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         unique: true,
         allowNull: false,
       },
       phone: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         unique: true,
       },
       firstName: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       lastName: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       password: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
       },
       bankAccount: {
-        type: Sequelize.STRING,
+        type: DataTypes.STRING,
       },
       role: {
-        type: Sequelize.ENUM("admin", "backoffice", "customer"),
+        type: DataTypes.ENUM("admin", "backoffice", "customer"),
         allowNull: false,
         defaultValue: "customer",
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: DataTypes.DATE,
       },
     });
   },
-  async down(queryInterface, Sequelize) {
+
+  async down(queryInterface: QueryInterface): Promise<void> {
     await queryInterface.dropTable("Users");
   },
 };

@@ -1,6 +1,6 @@
-import { sendWelcomeEmail } from "../../../application/services/mailer/mailer-service";
 import { UserRepository } from "../interfaces/user-repository";
 import { User } from "../entities/user";
+import { sendWelcomeEmail } from "../services/send-welcome-email";
 
 export class CreateUser {
   constructor(private userRepository: UserRepository) {}

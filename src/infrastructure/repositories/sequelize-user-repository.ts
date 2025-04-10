@@ -1,15 +1,27 @@
-import { UserRepository } from "../../core/user/interfaces/user-repository";
-import { UserModel } from "../sequelize/models/user.model";
 import { User } from "../../core/user/entities/user";
+import { UserRepository } from "../../core/user/interfaces/user-repository";
+import { models } from "../sequelize";
 
 export class SequelizeUserRepository implements UserRepository {
   async save(user: User): Promise<User> {
-    await UserModel.create(user);
+    await models.User.create(user);
     return user;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const user = await UserModel.findOne({ where: { email } });
-    return user ? new User(user.id, user.name, user.email) : null;
+    const user = await models.User.findOne({ where: { email } });
+    if (user) {
+      return new User(
+        user.id,
+        user.email,
+        user.phone,
+        user.firstName,
+        user.lastName,
+        user.password,
+        user.role
+      );
+    }
+
+    return null;
   }
 }

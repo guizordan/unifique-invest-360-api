@@ -14,12 +14,12 @@ fi
 environment="${1:-test}"
 
 # Set variables for server_name and domain_name
-server_name="ferticred-${environment}"
+server_name="unifique-${environment}"
 
 if [ "${environment}" = "prod" ]; then
-    domain_name="ferticred.com.br"
+    domain_name="unifique.com.br"
 else
-    domain_name="${environment}.ferticred.com.br"
+    domain_name="${environment}.unifique.com.br"
 fi
 
 # Check for unstaged changes in the web repository
