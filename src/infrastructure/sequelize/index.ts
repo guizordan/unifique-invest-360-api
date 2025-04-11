@@ -1,9 +1,9 @@
 import { Sequelize } from "sequelize";
 import config from "./config/sequelize.config";
 import { initUserModel } from "./models/user.model";
+import { NODE_ENV } from "../settings";
 
-const env = process.env.NODE_ENV || "development";
-const dbConfig = config[env as keyof typeof config];
+const dbConfig = config[NODE_ENV as keyof typeof config];
 
 export const sequelize = new Sequelize(
   dbConfig.database,

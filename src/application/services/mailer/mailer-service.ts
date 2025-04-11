@@ -3,19 +3,17 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
+import {
+  ADMIN_SENDER,
+  MAILER_KEY,
+  NODE_ENV,
+} from "../../../infrastructure/settings";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const WEB_URL = process.env.WEB_URL || "https://test.unifique.com.br/";
-
-const ADMIN_SENDER =
-  process.env.NODE_ENV === "prod"
-    ? "admin@unifique.com.br"
-    : "admin@test.unifique.com.br";
-
 const mailerSend = new MailerSend({
-  apiKey: process.env.MAILER_KEY || "",
+  apiKey: MAILER_KEY,
 });
 
 interface EmailInput {
@@ -41,7 +39,7 @@ export function createEmailParams({
 }
 
 export async function sendOrLogEmail(emailParams: EmailParams): Promise<void> {
-  if (process.env.NODE_ENV === "prod") {
+  if (NODE_ENV === "prod") {
     try {
       await mailerSend.email.send(emailParams);
     } catch (error) {

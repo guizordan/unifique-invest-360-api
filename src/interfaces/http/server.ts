@@ -11,17 +11,17 @@ import fastifyMultipart from "@fastify/multipart";
 import fastifyPassport from "../../../passport";
 import routes from "./routes";
 import { handleError, handleSend } from "./hooks";
-import { cookieSettings } from "../../../settings";
+import {
+  cookieSettings,
+  LOG_LEVEL,
+  NODE_ENV,
+  SESSION_SECRET,
+  WEB_URL,
+} from "../../infrastructure/settings";
 import { fetchPricesForProducts, tokenExpiryCheck } from "../../jobs/cron";
 
 // Load env vars
 dotenv.config();
-
-const PORT = parseInt(process.env.PORT || "3000", 10);
-const LOG_LEVEL =
-  (process.env.LOG_LEVEL as "info" | "warn" | "error" | "debug") || "info";
-const NODE_ENV = process.env.NODE_ENV || "test";
-const SESSION_SECRET = process.env.SESSION_SECRET;
 
 const ADDRESS = "0.0.0.0";
 
@@ -67,11 +67,9 @@ app.setErrorHandler(handleError);
 // CORS
 app.register(cors, {
   origin: (origin, callback) => {
-    const env = process.env.NODE_ENV;
-
-    if (env === "prod") {
-      callback(null, origin === process.env.WEB_URL);
-    } else if (env === "local" || env === "test") {
+    if (NODE_ENV === "prod") {
+      callback(null, origin === WEB_URL);
+    } else if (NODE_ENV === "local" || NODE_ENV === "test") {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"), false);

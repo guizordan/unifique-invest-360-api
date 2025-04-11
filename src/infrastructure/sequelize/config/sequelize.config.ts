@@ -1,5 +1,6 @@
 import { Dialect } from "sequelize";
 import dotenv from "dotenv";
+import { databaseConfig, DB_TEST_NAME } from "../../settings";
 
 dotenv.config();
 
@@ -14,11 +15,11 @@ interface SequelizeConfig {
 }
 
 const baseConfig: SequelizeConfig = {
-  username: process.env.DB_USER || "unifique",
-  password: process.env.DB_PASSWORD || "root",
-  database: process.env.DB_NAME || "unifique_crm",
-  host: process.env.DB_HOST || "localhost",
-  port: Number(process.env.DB_PORT) || 3306,
+  username: databaseConfig.username,
+  password: databaseConfig.password,
+  database: databaseConfig.database,
+  host: databaseConfig.host,
+  port: databaseConfig.port,
   dialect: "mysql",
   logging: false,
 };
@@ -30,7 +31,7 @@ export default {
   },
   test: {
     ...baseConfig,
-    database: process.env.DB_TEST_NAME || "my_db_test",
+    database: DB_TEST_NAME,
     logging: false,
   },
   production: {
