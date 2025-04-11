@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-export function isHttpErrorCode(code: number) {
+export function isHttpErrorCode(code: number): boolean {
   return code >= 400 && code <= 599;
 }
 

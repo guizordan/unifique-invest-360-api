@@ -2,15 +2,35 @@ import { UserRepository } from "../interfaces/user-repository";
 import { User } from "../entities/user";
 import { sendWelcomeEmail } from "../services/send-welcome-email";
 
-export class CreateUser {
-  constructor(private userRepository: UserRepository) {}
+export async function createUser(
+  userRepo: UserRepository,
+  data: User
+): Promise<User> {
+  const existing = await userRepo.findByEmail(data.email);
+  if (existing) throw new Error("User already exists");
 
-  async execute(data: { name: string; email: string }) {
-    const user = new User("generated-id", data.name, data.email);
-    if (!user.isValidEmail()) throw new Error("Invalid email");
+  const savedUser = await userRepo.save(data);
 
-    const savedUser = await this.userRepository.save(user);
+  sendWelcomeEmail({
+    recipient: savedUser.email,
+    firstName: savedUser.fullName,
+  });
 
-    sendWelcomeEmail({ recipient: savedUser.email, firstName: savedUser.name });
-  }
+  return savedUser;
+}
+
+export async function updateUser(
+  userRepo: UserRepository,
+  data: User
+): Promise<User | null> {
+  await userRepo.update(data);
+  const updatedUser = await userRepo.findByPk(data.id);
+  return updatedUser;
+}
+
+export async function destroyUser(
+  userRepo: UserRepository,
+  userId: string
+): Promise<undefined> {
+  await userRepo.destroy(userId);
 }

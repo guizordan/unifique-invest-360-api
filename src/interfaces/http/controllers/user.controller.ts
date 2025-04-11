@@ -1,61 +1,87 @@
 import { Op } from "sequelize";
-import { User } from "../../models/index.js";
+import { User } from "../../../core/user/entities/user";
 
-export async function createUser(req, reply) {
-  const { email, phone, firstName, lastName, password, bankAccount, role } =
-    req.body;
+import { FastifyRequest, FastifyReply, FastifyError } from "fastify";
+import {
+  createUser,
+  updateUser,
+} from "../../../core/user/usecases/create-user";
+import { SequelizeUserRepository } from "../../../infrastructure/repositories/sequelize-user-repository";
 
-  const newUser = await User.create({
+const userRepo = new SequelizeUserRepository();
+
+export async function handleCreateUser(
+  req: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { email, phone, firstName, lastName, password, role } = req.body as any;
+
+  const newUser = new User(
+    undefined,
     email,
     phone,
     firstName,
     lastName,
     password,
-    bankAccount,
-    role,
-  });
-
-  reply.code(201).send({
-    data: { user: newUser, message: "Usuário cadastrado com sucesso." },
-  });
-}
-
-export async function updateUser(req, reply) {
-  const {
-    email,
-    phone,
-    firstName,
-    lastName,
-    bankAccount = "",
-    role,
-  } = req.body;
-  const userId = req.params.id;
-
-  await User.update(
-    {
-      email,
-      phone,
-      firstName,
-      lastName,
-      bankAccount,
-      role,
-    },
-    { where: { id: userId } }
+    role
   );
 
-  const updatedUser = await User.findByPk(userId, {
-    attributes: { exclude: ["password"] },
-  });
+  try {
+    const user = await createUser(userRepo, newUser);
+    return reply.send({ success: true, data: user });
+  } catch (err) {
+    const error = err as FastifyError;
 
-  reply.code(200).send({
-    data: {
-      user: updatedUser,
-      message: `${updatedUser.fullName} atualizado com sucesso.`,
-    },
-  });
+    return reply.status(error.statusCode ?? 500).send({
+      success: false,
+      error: error.message || "Erro interno do servidor",
+    });
+  }
 }
 
-export async function updateUserPassword(req, reply) {
+export async function handleUpdateUser(
+  req: FastifyRequest,
+  reply: FastifyReply
+) {
+  const { id } = req.params as { id: string };
+  const { email, phone, firstName, lastName, password, role } = req.body as any;
+
+  const user = new User(id, email, phone, firstName, lastName, password, role);
+
+  try {
+    const updatedUser = await updateUser(userRepo, user);
+
+    return reply.code(200).send({
+      data: {
+        user: updatedUser,
+        message: `${updatedUser.fullName} atualizado com sucesso.`,
+      },
+    });
+  } catch (err) {
+    const error = err as FastifyError;
+
+    return reply.status(error.statusCode ?? 500).send({
+      success: false,
+      error: error.message || "Erro interno do servidor",
+    });
+  }
+}
+
+export async function deleteUser(req, reply) {
+  const userId = req.params.id;
+  const result = await destroyUser({ where: { id: userId } });
+
+  if (result === 0) {
+    reply.code(404).send({ message: "Usuário não encontrado." });
+  } else {
+    reply.code(200).send({ data: { message: "Usuário deletado." } });
+  }
+}
+
+export async function updateUserPassword(
+  req: FastifyRequest,
+  reply: FastifyReply
+) {
   const { password, passwordConfirm } = req.body;
   const userId = req.params.id;
 
@@ -81,17 +107,6 @@ export async function updateUserPassword(req, reply) {
       message: `Senha de ${updatedUser.fullName} alterada com sucesso.`,
     },
   });
-}
-
-export async function deleteUser(req, reply) {
-  const userId = req.params.id;
-  const result = await User.destroy({ where: { id: userId } });
-
-  if (result === 0) {
-    reply.code(404).send({ message: "Usuário não encontrado." });
-  } else {
-    reply.code(200).send({ data: { message: "Usuário deletado." } });
-  }
 }
 
 export async function listUsers(req, reply) {
