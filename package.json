@@ -2,15 +2,15 @@
   "name": "unifique-api",
   "version": "1.0.0",
   "description": "API for Unifique using Fastify, Sequelize, and TypeScript",
-  "main": "dist/server.js",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "node dist/server.ts",
-    "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
-    "build": "tsc",
-    "create-admin": "ts-node src/create-admin.ts",
+    "dev": "nodemon --watch src --ext ts,tsx --exec tsx src/index.ts",
+    "build": "swc src -d dist --source-maps",
+    "start": "node dist/index.js",
+    "create-admin": "tsx src/create-admin.ts",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "db:migrate": "sequelize-cli db:migrate --config ./src/infrastructure/database/config/sequelize.config.ts"
+    "db:migrate": "sequelize-cli db:migrate --config ./src/infra/database/config/sequelize.config.ts"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,6 @@
     "jsonwebtoken": "^9.0.2",
     "mailersend": "^2.5.0",
     "mysql2": "^3.14.0",
-    "node-cron": "^3.0.3",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "puppeteer": "^24.6.1",
@@ -44,6 +43,8 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@swc/cli": "^0.7.4",
+    "@swc/core": "^1.11.24",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.14.0",
@@ -52,11 +53,12 @@
     "eslint": "^9.24.0",
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-import": "^2.31.0",
+    "node-cron": "^3.0.3",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.3",
     "prompt-sync": "^4.2.0",
     "sequelize-cli": "^6.6.2",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
     "typescript": "^5.8.3"
   },
   "type": "module"

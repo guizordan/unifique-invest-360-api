@@ -1,2 +1,2 @@
 module.exports =
-  require("./src/infrastructure/database/config/sequelize.config").default;
+  require("./src/infra/database/config/sequelize.config").default;
