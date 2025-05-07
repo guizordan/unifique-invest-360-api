@@ -15,7 +15,7 @@ const toDomain = (model: any): Customer => {
 
 export default class SequelizeCustomerRepository implements CustomerRepository {
   async create(customer: Customer): Promise<Customer> {
-    const createdModel = await models.Customer.create(customer);
+    const createdModel = await models.Customer.create(customer as any);
     return toDomain(createdModel);
   }
 
@@ -44,6 +44,7 @@ export default class SequelizeCustomerRepository implements CustomerRepository {
     const customerModel = await models.Customer.findByPk(userId, {
       attributes: { exclude: ["password"] },
     });
+
     return customerModel ? toDomain(customerModel) : null;
   }
 

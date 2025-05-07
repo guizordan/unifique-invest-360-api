@@ -1,7 +1,9 @@
 import { Sequelize } from "sequelize";
-import config from "./config/sequelize.config";
-import { initCustomerModel } from "./models/customer.model";
+
 import { NODE_ENV } from "@/settings";
+import config from "@/infra/sequelize/config/sequelize.config";
+
+import { initCustomerModel } from "@/infra/sequelize/models/customer.model";
 
 const dbConfig = config[NODE_ENV as keyof typeof config];
 
