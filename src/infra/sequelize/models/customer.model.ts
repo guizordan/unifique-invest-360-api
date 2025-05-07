@@ -23,9 +23,9 @@ export class Customer extends Model<
   declare role: "admin" | "backoffice" | "customer";
 
   // Association
-  static associate(models: any) {
-    this.hasMany(models.Order, { foreignKey: "userId" });
-  }
+  // static associate(models: any) {
+  //   this.hasMany(models.Order, { foreignKey: "userId" });
+  // }
 }
 
 // Sequelize init function

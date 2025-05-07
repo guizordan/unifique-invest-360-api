@@ -14,12 +14,7 @@ const NODE_ENV =
   (process.env.NODE_ENV as "development" | "production" | "test" | "local") ||
   "test";
 
-import fastify, {
-  FastifyInstance,
-  FastifyReply,
-  FastifyRequest,
-  RawServerDefault,
-} from "fastify";
+import fastify, { FastifyInstance, RawServerDefault } from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import session from "@fastify/session";

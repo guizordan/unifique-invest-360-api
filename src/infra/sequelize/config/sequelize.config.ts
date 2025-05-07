@@ -1,6 +1,6 @@
 import { Dialect } from "sequelize";
 import dotenv from "dotenv";
-import { databaseConfig, DB_TEST_NAME } from "@/../settings";
+import { databaseConfig, DB_TEST_NAME } from "@/settings";
 
 dotenv.config();
 
@@ -25,7 +25,11 @@ const baseConfig: SequelizeConfig = {
 };
 
 export default {
-  development: {
+  local: {
+    ...baseConfig,
+    logging: console.log,
+  },
+  dev: {
     ...baseConfig,
     logging: console.log,
   },
@@ -34,7 +38,7 @@ export default {
     database: DB_TEST_NAME,
     logging: false,
   },
-  production: {
+  prod: {
     ...baseConfig,
     logging: false,
   },

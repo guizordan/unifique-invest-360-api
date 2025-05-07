@@ -2,22 +2,20 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { createCustomer } from "@/app/customer/create-customer";
 import CustomerRepository from "@/infra/sequelize/repositories/customer.repository";
-import Customer from "@/core/customer/entities/Customer";
+
+import CustomerDTO from "@/core/customer/interfaces/customer.dto";
 
 export class CustomerController {
   async create(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     try {
-      const { id, fullName, email } = request.body as any; // Adapte a tipagem conforme sua necessidade
+      const customerData = request.body as CustomerDTO;
 
-      // Instancia a implementação do repositório DENTRO do controller
       const customerRepository = new CustomerRepository();
 
-      // Chama a função pura createCustomer, passando as dependências
-      const newCustomer = await createCustomer(customerRepository, {
-        id,
-        fullName,
-        email,
-      });
+      const newCustomer = await createCustomer(
+        customerRepository,
+        customerData
+      );
 
       reply.status(201).send(newCustomer);
     } catch (error: any) {

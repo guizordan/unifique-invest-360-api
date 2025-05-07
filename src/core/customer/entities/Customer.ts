@@ -14,7 +14,7 @@ export default class Customer {
   constructor(data: {
     id: string;
     email: string;
-    phone?: string;
+    phone: string;
     firstName: string;
     lastName: string;
     cpf: string;
