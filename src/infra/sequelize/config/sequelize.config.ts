@@ -1,12 +1,8 @@
 import { Dialect } from "sequelize";
-import dotenv from "dotenv";
+
 import { databaseConfig, DB_TEST_NAME } from "@/settings";
 
-dotenv.config();
-
 interface SequelizeConfig {
-  username: string;
-  password: string;
   database: string;
   host: string;
   port: number;
@@ -15,12 +11,10 @@ interface SequelizeConfig {
 }
 
 const baseConfig: SequelizeConfig = {
-  username: databaseConfig.username,
-  password: databaseConfig.password,
   database: databaseConfig.database,
   host: databaseConfig.host,
   port: databaseConfig.port,
-  dialect: "mysql",
+  dialect: "mssql",
   logging: false,
 };
 

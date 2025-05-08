@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export const NODE_ENV = process.env.NODE_ENV || "prod";
 const secure = NODE_ENV === "local" ? false : true;
 
@@ -31,11 +34,9 @@ export const cookieSettings = {
 };
 
 export const databaseConfig = {
-  username: process.env.DB_USER || "unifique",
-  password: process.env.DB_PASSWORD || "root",
-  database: process.env.DB_NAME || "unifique_crm",
-  host: process.env.DB_HOST || "localhost",
-  port: Number(process.env.DB_PORT) || 3306,
-  dialect: "mysql",
+  database: process.env.AZURE_SQL_DATABASE || "unifique",
+  host: process.env.AZURE_SQL_SERVER!,
+  port: Number(process.env.AZURE_SQL_PORT) || 1433,
+  dialect: "mssql",
   logging: false,
 };
