@@ -1,5 +1,5 @@
 import { initCustomerModel } from "@/infra/sequelize/models/customer.model";
-import { initializeSequelize } from "./config/azure.config";
+import { initializeSequelize } from "@/infra/sequelize/azure.config";
 
 const sequelize = await initializeSequelize();
 

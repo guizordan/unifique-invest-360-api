@@ -26,17 +26,10 @@ export default {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      password: {
+      cpf: {
         type: DataTypes.STRING,
-        allowNull: false,
-      },
-      bankCustomer: {
-        type: DataTypes.STRING,
-      },
-      role: {
-        type: DataTypes.ENUM("admin", "backoffice", "customer"),
-        allowNull: false,
-        defaultValue: "customer",
+        unique: true,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,

@@ -7,10 +7,9 @@
     "dev": "nodemon --watch src --ext ts,tsx --exec tsx src/index.ts",
     "build": "swc src -d dist --source-maps",
     "start": "node dist/index.js",
-    "create-admin": "tsx src/create-admin.ts",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "db:migrate": "sequelize-cli db:migrate --config ./src/infra/database/config/sequelize.config.ts"
+    "db:migrate": "node node_modules/.bin/sequelize db:migrate"
   },
   "repository": {
     "type": "git",

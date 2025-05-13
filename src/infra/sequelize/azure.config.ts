@@ -2,6 +2,7 @@ import * as msal from "@azure/msal-node";
 
 import { azureDBConfig } from "@/settings";
 import { Dialect, Sequelize } from "sequelize";
+import path from "path";
 
 interface SequelizeConfig {
   database: string;
