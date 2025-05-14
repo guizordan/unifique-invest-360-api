@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../../src/core/customer/interfaces/customer.dto.ts"],"sourcesContent":["export default interface CustomerDTO {\n  firstName: string;\n  lastName: string;\n  email: string;\n  cpf: string;\n  id?: string;\n  phone: string;\n  createdAt?: Date;\n}\n"],"names":[],"mappings":"AAAA,WAQC"}
