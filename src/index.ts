@@ -1,5 +1,5 @@
 import fastifyApp from "@/infra/http/server";
-import { getAccessToken } from "./azure.config";
+import { getAccessToken } from "./azure";
 
 import "reflect-metadata";
 

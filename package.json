@@ -9,7 +9,7 @@
     "start": "ts-node src/index.ts",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "typeorm": "typeorm-ts-node-esm"
+    "typeorm": "typeorm-ts-node-commonjs --dataSource ../api/dist/src/data-source.js"
   },
   "repository": {
     "type": "git",
@@ -55,6 +55,5 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
-  },
-  "type": "module"
+  }
 }
