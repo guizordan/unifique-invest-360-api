@@ -1,6 +1,8 @@
 import fastifyApp from "@/infra/http/server";
 import { getAccessToken } from "./azure.config";
 
+import "reflect-metadata";
+
 const PORT = process.env.PORT || 3000;
 const ADDRESS = "0.0.0.0";
 

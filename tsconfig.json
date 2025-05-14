@@ -113,6 +113,6 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "include": ["src", "ormconfig.ts"],
+  "include": ["src", "src/infra/database/data-source.ts"],
   "exclude": ["node_modules"]
 }
