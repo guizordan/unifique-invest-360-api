@@ -1,7 +1,5 @@
 import { initCustomerModel } from "@/infra/sequelize/models/customer.model";
-import { initializeSequelize } from "@/infra/sequelize/azure.config";
-
-const sequelize = await initializeSequelize();
+import sequelize from "@/infra/sequelize/azure.config";
 
 if (!sequelize) {
   throw new Error("Falha ao inicializar o Sequelize.");

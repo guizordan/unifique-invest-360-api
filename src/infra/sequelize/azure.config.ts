@@ -1,24 +1,9 @@
 import * as msal from "@azure/msal-node";
 
+// import { Sequelize } from "sequelize";
 import { azureDBConfig } from "@/settings";
-import { Dialect, Sequelize } from "sequelize";
-import path from "path";
-
-interface SequelizeConfig {
-  database: string;
-  host: string;
-  port: number;
-  dialect: Dialect;
-  logging: boolean | ((sql: string) => void);
-}
-
-const sequelizeConfig: SequelizeConfig = {
-  database: azureDBConfig.database,
-  host: azureDBConfig.host,
-  port: azureDBConfig.port,
-  dialect: "mssql",
-  logging: false,
-};
+import { MsSqlDialect } from "@sequelize/mssql";
+import Sequelize from "@sequelize/core";
 
 const msalConfig = {
   auth: {
@@ -44,45 +29,44 @@ async function getAccessToken(): Promise<string> {
   }
 }
 
-export async function initializeSequelize() {
-  const accessToken = await getAccessToken();
+const accessToken = await getAccessToken();
 
-  if (!accessToken) {
-    console.error("Não foi possível obter o token de acesso.");
-    return null;
-  }
-
-  const sequelize = new Sequelize(sequelizeConfig.database, "", "", {
-    dialect: "mssql",
-    host: sequelizeConfig.host,
-    port: sequelizeConfig.port,
-    dialectOptions: {
-      server: sequelizeConfig.host,
-      options: {
-        encrypt: true,
-        trustServerCertificate: false,
-      },
-      authentication: {
-        type: "azure-active-directory-default",
-        options: {
-          token: accessToken,
-        },
-      },
-    },
-    logging: sequelizeConfig.logging,
-  });
-
-  try {
-    await sequelize.authenticate();
-    console.log(
-      "Conexão com o SQL Server via Sequelize e Entra ID estabelecida com sucesso!"
-    );
-  } catch (error: any) {
-    console.error("Erro ao conectar com Sequelize:", error);
-    if (error.original) {
-      console.error("Erro original:", error.original);
-    }
-  }
-
-  return sequelize;
+if (!accessToken) {
+  console.error("Não foi possível obter o token de acesso.");
 }
+
+const sequelize = new Sequelize({
+  dialect: "mssql",
+  server: azureDBConfig.host,
+  port: azureDBConfig.port,
+  authentication: {
+    type: "azure-active-directory-default",
+    options: {
+      token: accessToken,
+    },
+  },
+  dialectOptions: {
+    server: azureDBConfig.host,
+    options: {
+      encrypt: true,
+      trustServerCertificate: false,
+    },
+  },
+  // logging: azureDBConfig.logging,
+});
+
+try {
+  await sequelize.authenticate();
+  console.log(sequelize.getDialect());
+
+  console.log(
+    "Conexão com o SQL Server via Sequelize e Entra ID estabelecida com sucesso!"
+  );
+} catch (error: any) {
+  console.error("Erro ao conectar com Sequelize:", error);
+  if (error.original) {
+    console.error("Erro original:", error.original);
+  }
+}
+
+export default sequelize;

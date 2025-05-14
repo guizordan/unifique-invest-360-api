@@ -1,15 +1,8 @@
 import { Dialect } from "sequelize";
+import { ensureEnv } from "./shared/helpers";
+
 import dotenv from "dotenv";
-
 dotenv.config();
-
-const ensureEnv = (key: string): string => {
-  const value = process.env[key];
-  if (!value) {
-    throw new Error(`A variável de ambiente ${key} é obrigatória.`);
-  }
-  return value;
-};
 
 export const NODE_ENV =
   (process.env.NODE_ENV as "local" | "test" | "prod") || "prod";
@@ -48,7 +41,7 @@ export const cookieSettings: {
   secure,
 };
 
-export const azureDBConfig: {
+interface SequelizeConfig {
   database: string;
   host: string;
   port: number;
@@ -57,7 +50,9 @@ export const azureDBConfig: {
   authority: string;
   dialect: Dialect;
   logging: boolean | ((sql: string) => void);
-} = {
+}
+
+export const azureDBConfig: SequelizeConfig = {
   database: ensureEnv("AZURE_SQL_DATABASE"),
   host: ensureEnv("AZURE_SQL_SERVER"),
   port: Number(process.env.AZURE_SQL_PORT) || 1433,

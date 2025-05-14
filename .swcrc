@@ -3,16 +3,16 @@
     "target": "es2021",
     "parser": {
       "syntax": "typescript",
+      "tsx": true,
       "decorators": true
     },
     "transform": {
       "legacyDecorator": true,
       "decoratorMetadata": true
-    },
-    "minify": false
+    }
   },
   "module": {
-    "type": "commonjs"
+    "type": "es6"
   },
   "sourceMaps": true
 }
