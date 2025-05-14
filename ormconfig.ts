@@ -2,6 +2,8 @@ import { DataSourceOptions } from "typeorm";
 import { azureDBConfig } from "@/settings";
 import { getAccessToken } from "./src/azure.config";
 
+console.log("starting");
+
 const accessToken = await getAccessToken();
 
 const config: DataSourceOptions = {

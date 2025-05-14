@@ -11,9 +11,10 @@ const tokenRequest = {
 export async function getAccessToken(): Promise<string> {
   try {
     const response = await pca.acquireTokenByClientCredential(tokenRequest);
+    console.log("Azure authentication successful");
     return response?.accessToken!;
   } catch (error) {
-    console.error("Erro ao obter token de acesso:", error);
+    console.error("Azure authentication failure: ", error);
     return "";
   }
 }

@@ -1,7 +1,10 @@
 import fastifyApp from "@/infra/http/server";
+import { getAccessToken } from "./azure.config";
 
 const PORT = process.env.PORT || 3000;
 const ADDRESS = "0.0.0.0";
+
+const accessToken = await getAccessToken();
 
 fastifyApp.listen({ port: Number(PORT), host: ADDRESS }, (err, address) => {
   if (err) {

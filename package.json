@@ -9,7 +9,7 @@
     "start": "ts-node src/index.ts",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "typeorm": "typeorm-ts-node-esm migration:generate -n CreateCustomer -c ormconfig.ts"
+    "typeorm": "typeorm-ts-node-esm migration:generate -n CreateCustomer"
   },
   "repository": {
     "type": "git",
@@ -55,7 +55,6 @@
     "node-cron": "^3.0.3",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.3",
-    "prompt-sync": "^4.2.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3"
