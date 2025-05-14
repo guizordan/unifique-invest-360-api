@@ -1,8 +1,0 @@
-var path = require("path");
-
-module.exports = {
-  config: path.resolve("src/infra/sequelize", "azure.config.ts"),
-  "models-path": path.resolve("src/infra/sequelize/models"),
-  "seeders-path": path.resolve("src/infra/sequelize/seeders"),
-  "migrations-path": path.resolve("src/infra/sequelize/migrations"),
-};
