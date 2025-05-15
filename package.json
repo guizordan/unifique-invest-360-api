@@ -9,7 +9,8 @@
     "start": "ts-node src/index.ts",
     "lint": "eslint . --ext .ts",
     "format": "prettier --write .",
-    "typeorm": "node -r dotenv/config ./node_modules/typeorm/cli-ts-node-commonjs.js"
+    "migration:create": "sh typeorm.sh create",
+    "db:migrate": "sh typeorm.sh run"
   },
   "repository": {
     "type": "git",

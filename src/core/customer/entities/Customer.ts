@@ -1,15 +1,29 @@
-export default class Customer {
-  public id: string;
-  public email: string;
-  public phone: string | undefined;
-  public fullName: string;
-  public firstName: string;
-  public lastName: string;
-  public cpf: string;
-  public readonly createdAt: Date = new Date();
-  // Potentially a reference to the specific entity ID if needed
-  // public readonly entityId: string;
-  // public readonly entityType: 'advisor' | 'backoffice' | 'domain'; // Adjust roles as needed
+import { Entity, PrimaryColumn, Column, Unique } from "typeorm";
+
+@Entity()
+export class Customer {
+  @PrimaryColumn("uuid")
+  id: string;
+
+  @Column()
+  @Unique(["email"])
+  email: string;
+
+  @Column()
+  phone: string;
+
+  @Column()
+  fullName: string;
+
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
+  @Column()
+  @Unique(["cpf"])
+  cpf: string;
 
   constructor(data: {
     id: string;

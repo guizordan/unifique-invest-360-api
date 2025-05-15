@@ -18,7 +18,7 @@ export async function createDataSource(): Promise<DataSource> {
     },
     synchronize: false,
     entities: [__dirname + "/../**/*.entity{.ts,.js}"],
-    migrations: [__dirname + "/../migrations/**/*{.ts,.js}"],
+    migrations: [__dirname + "/migrations/**/*{.ts,.js}"],
     subscribers: [__dirname + "/../subscribers/**/*{.ts,.js}"],
   });
 
