@@ -39,3 +39,39 @@ export const cookieSettings: {
   sameSite,
   secure,
 };
+
+interface MsalConfig {
+  auth: {
+    clientId: string;
+    clientSecret: string;
+    authority: string;
+  };
+}
+
+export const msalConfig: MsalConfig = {
+  auth: {
+    clientId: ensureEnv("AZURE_AD_CLIENT_ID"),
+    clientSecret: ensureEnv("AZURE_AD_CLIENT_SECRET"),
+    authority: `https://login.microsoftonline.com/${ensureEnv("AZURE_AD_TENANT_ID")}`,
+  },
+};
+
+interface TypeORMConfig {
+  database: string;
+  host: string;
+  port: number;
+  clientId: string;
+  clientSecret: string;
+  authority: string;
+  logging: boolean | ((sql: string) => void);
+}
+
+export const azureDBConfig: TypeORMConfig = {
+  database: ensureEnv("AZURE_SQL_DATABASE"),
+  host: ensureEnv("AZURE_SQL_SERVER"),
+  port: Number(process.env.AZURE_SQL_PORT) || 1433,
+  clientId: ensureEnv("AZURE_AD_CLIENT_ID"),
+  clientSecret: ensureEnv("AZURE_AD_CLIENT_SECRET"),
+  authority: `https://login.microsoftonline.com/${ensureEnv("AZURE_AD_TENANT_ID")}`,
+  logging: false,
+};
