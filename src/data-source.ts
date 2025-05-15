@@ -56,7 +56,7 @@ interface TypeORMConfig {
 export const azureDBConfig: TypeORMConfig = {
   database: ensureEnv("AZURE_SQL_DATABASE"),
   host: ensureEnv("AZURE_SQL_SERVER"),
-  port: Number(process.env.AZURE_SQL_PORT || "1433"),
+  port: Number(process.env.AZURE_SQL_PORT) || 1433,
   clientId: ensureEnv("AZURE_AD_CLIENT_ID"),
   clientSecret: ensureEnv("AZURE_AD_CLIENT_SECRET"),
   authority: `https://login.microsoftonline.com/${ensureEnv("AZURE_AD_TENANT_ID")}`,
@@ -64,9 +64,9 @@ export const azureDBConfig: TypeORMConfig = {
 };
 
 export async function createDataSource(): Promise<DataSource> {
-  const accessToken = await getAccessToken();
+  const token = await getAccessToken();
 
-  return new DataSource({
+  const dataSource = new DataSource({
     type: "mssql",
     host: azureDBConfig.host,
     port: azureDBConfig.port,
@@ -74,7 +74,7 @@ export async function createDataSource(): Promise<DataSource> {
     authentication: {
       type: "azure-active-directory-access-token",
       options: {
-        token: accessToken,
+        token,
       },
     },
     synchronize: false,
@@ -82,6 +82,10 @@ export async function createDataSource(): Promise<DataSource> {
     migrations: [__dirname + "/../migrations/**/*{.ts,.js}"],
     subscribers: [__dirname + "/../subscribers/**/*{.ts,.js}"],
   });
+
+  // console.log(dataSource);
+
+  return dataSource;
 }
 
 export default createDataSource();
