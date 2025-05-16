@@ -1,5 +1,5 @@
 import CustomerRepository from "@/core/customer/interfaces/customer.repository";
-import Customer from "@/core/customer/entities/Customer";
+import Customer from "@/core/customer/customer.entity";
 import { sendWelcomeEmail } from "./send-welcome-email";
 import { v4 as uuidv4 } from "uuid";
 import CustomerDTO from "@/core/customer/interfaces/customer.dto";

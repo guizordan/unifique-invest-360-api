@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --- Configuration ---
-TYPEORM_CLI="./node_modules/typeorm/cli-ts-node-commonjs.js"
+TYPEORM_CLI="./node_modules/typeorm/cli-ts-node-esm.js"
 DOTENV_CONFIG="-r dotenv/config"
 MIGRATIONS_DIR="src/infra/database/migrations"
 DATA_SOURCE="src/infra/database/dataSource.ts"

@@ -1,4 +1,4 @@
-import { ensureEnv } from "./shared/helpers";
+import { ensureEnv } from "./shared/helpers.ts";
 
 import dotenv from "dotenv";
 dotenv.config();

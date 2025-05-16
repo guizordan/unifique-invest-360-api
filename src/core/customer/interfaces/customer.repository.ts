@@ -1,4 +1,4 @@
-import Customer from "../entities/Customer";
+import Customer from "../customer.entity";
 
 export default interface CustomerRepository {
   create(entity: Customer): Promise<Customer>;

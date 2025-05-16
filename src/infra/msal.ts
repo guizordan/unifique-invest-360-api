@@ -1,6 +1,6 @@
 // src/infra/database/data-source.ts
 import * as msal from "@azure/msal-node";
-import { azureDBConfig, msalConfig } from "../settings";
+import { msalConfig } from "../settings.ts";
 
 const pca = new msal.ConfidentialClientApplication(msalConfig);
 

@@ -1,53 +1,70 @@
-// import Customer from "@/core/customer/entities/Customer";
-// import CustomerRepository from "@/core/customer/interfaces/customer.repository";
+import { DataSource, Repository } from "typeorm";
+import Customer from "@/core/customer/customer.entity";
+import CustomerRepository from "@/core/customer/interfaces/customer.repository";
+import CustomerEntity from "@/core/customer/customer.entity";
 
-// const toDomain = (model: any): Customer => {
-//   return new Customer({
-//     id: model.id,
-//     email: model.email,
-//     phone: model.phone,
-//     firstName: model.firstName,
-//     lastName: model.lastName,
-//     cpf: model.cpf,
-//   });
-// };
+export default class TypeormCustomerRepository implements CustomerRepository {
+  private readonly customerRepository: Repository<CustomerEntity>;
 
-// export default class SequelizeCustomerRepository implements CustomerRepository {
-//   async create(customer: Customer): Promise<Customer> {
-//     const createdModel = await models.Customer.create(customer as any);
-//     return toDomain(createdModel);
-//   }
+  constructor(dataSource: DataSource) {
+    this.customerRepository = dataSource.getRepository(CustomerEntity);
+  }
 
-//   async findByEmail(email: string): Promise<Customer | null> {
-//     const customerModel = await models.Customer.findOne({ where: { email } });
-//     return customerModel ? toDomain(customerModel) : null;
-//   }
+  private toDomain(customerEntity: CustomerEntity): Customer {
+    return new Customer({
+      id: customerEntity.id,
+      email: customerEntity.email,
+      phone: customerEntity.phone,
+      firstName: customerEntity.firstName,
+      lastName: customerEntity.lastName,
+      cpf: customerEntity.cpf,
+    });
+  }
 
-//   async update(customer: Customer): Promise<void> {
-//     if (!customer.id) {
-//       throw new Error("Customer ID is required for update");
-//     }
+  private toEntity(customer: Customer): CustomerEntity {
+    const customerEntity = new CustomerEntity({
+      id: customer.id,
+      email: customer.email,
+      phone: customer.phone,
+      firstName: customer.firstName,
+      lastName: customer.lastName,
+      cpf: customer.cpf,
+    });
+    return customerEntity;
+  }
 
-//     const [updatedRows] = await models.Customer.update(customer, {
-//       where: { id: customer.id },
-//     });
+  async create(customer: Customer): Promise<Customer> {
+    const customerEntity = this.toEntity(customer);
+    const savedCustomerEntity =
+      await this.customerRepository.save(customerEntity);
+    return this.toDomain(savedCustomerEntity);
+  }
 
-//     if (updatedRows === 0) {
-//       // Você pode optar por lançar uma exceção aqui se a atualização falhar
-//       // throw new Error(`Customer with ID ${customer.id} not found`);
-//       return; // Indica que nenhuma linha foi atualizada
-//     }
-//   }
+  async findByEmail(email: string): Promise<Customer | null> {
+    const customerEntity = await this.customerRepository.findOne({
+      where: { email },
+    });
+    return customerEntity ? this.toDomain(customerEntity) : null;
+  }
 
-//   async findById(userId: string): Promise<Customer | null> {
-//     const customerModel = await models.Customer.findByPk(userId, {
-//       attributes: { exclude: ["password"] },
-//     });
+  async update(customer: Customer): Promise<void> {
+    const customerEntity = await this.customerRepository.preload(
+      this.toEntity(customer)
+    );
 
-//     return customerModel ? toDomain(customerModel) : null;
-//   }
+    if (!customerEntity) {
+      return;
+    }
+    await this.customerRepository.save(customerEntity);
+  }
 
-//   async destroy(userId: string): Promise<undefined> {
-//     await models.Customer.destroy({ where: { id: userId } });
-//   }
-// }
+  async findById(id: string): Promise<Customer | null> {
+    const customerEntity = await this.customerRepository.findOneBy({ id });
+    return customerEntity ? this.toDomain(customerEntity) : null;
+  }
+
+  async destroy(id: string): Promise<undefined> {
+    await this.customerRepository.delete(id);
+    return undefined;
+  }
+}

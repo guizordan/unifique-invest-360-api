@@ -1,9 +1,18 @@
 import { DataSource } from "typeorm";
-import { getAccessToken } from "../../infra/msal";
-import { azureDBConfig } from "../../settings";
+import { getAccessToken } from "../../infra/msal.ts";
+import { azureDBConfig } from "../../settings.ts";
+
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+import Customer from "@/core/customer/customer.entity.ts";
+import { CustomerController } from "../http/customer/customer.controller.ts";
 
 export async function createDataSource(): Promise<DataSource> {
   const token = await getAccessToken();
+
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
 
   const dataSource = new DataSource({
     type: "mssql",
@@ -17,12 +26,13 @@ export async function createDataSource(): Promise<DataSource> {
       },
     },
     synchronize: false,
-    entities: [__dirname + "/../**/*.entity{.ts,.js}"],
-    migrations: [__dirname + "/migrations/**/*{.ts,.js}"],
-    subscribers: [__dirname + "/../subscribers/**/*{.ts,.js}"],
+    entities: [Customer],
+    migrations: [join(__dirname, "/migrations/**/*{.ts,.js}")],
+    subscribers: [join(__dirname, "/../subscribers/**/*{.ts,.js}")],
   });
 
   return dataSource;
 }
 
-export default createDataSource();
+const dataSource = await createDataSource();
+export default dataSource;
