@@ -5,8 +5,6 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  webAppName: "360-api"
-  azureServiceConnection: "Subscription 1 (a7b7fbd9-229d-44b7-8049-2f4cfa6b7bb1)"
   nodeLtsVersion: "22-lts"
 
 steps:
@@ -35,12 +33,3 @@ steps:
       artifactName: "drop"
       publishLocation: "Container"
     displayName: "Publish Build Artifacts"
-
-  - task: AzureWebApp@1
-    inputs:
-      azureSubscription: "$(azureServiceConnection)"
-      appType: "webAppLinux"
-      appName: "$(webAppName)"
-      package: "$(System.DefaultWorkingDirectory)/_drop/*.zip"
-      runtimeStack: "NODE|$(nodeLtsVersion)"
-    displayName: "Deploy to Azure Web App"
