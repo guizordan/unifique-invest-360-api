@@ -10,7 +10,7 @@ variables:
   # Replace with the name of your Azure Subscription Service Connection
   azureServiceConnection: 'Subscription 1 (a7b7fbd9-229d-44b7-8049-2f4cfa6b7bb1)'
   # Set the Node.js LTS version you want to use for the runtime stack
-  nodeLtsVersion: '20-lts' # Or '18-lts', '22-lts', etc., depending on your needs and what Azure supports.
+  nodeLtsVersion: '22-lts' # Or '18-lts', '22-lts', etc., depending on your needs and what Azure supports.
 
 steps:
 - task: NodeTool@0
@@ -42,9 +42,10 @@ steps:
 - task: AzureWebApp@1
   inputs:
     azureSubscription: '$(azureServiceConnection)'
-    appType: 'webAppLinux' # Use 'webAppWindows' if deploying to Windows App Service
+    appType: 'webAppLinux'
     appName: '$(webAppName)'
-    package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    runtimeStack: 'NODE|$(nodeLtsVersion)' # This sets the Node.js runtime version on the Azure App Service
-    # startUpCommand: 'npm start' # Optional: Add your custom startup command if needed (e.g., 'node server.js' or 'pm2 start ecosystem.config.js --no-daemon')
+    # Corrected path: point to the downloaded artifact
+    package: '$(System.DefaultWorkingDirectory)/_drop/$(Build.BuildId).zip'
+    runtimeStack: 'NODE|$(nodeLtsVersion)'
+    # startUpCommand: 'npm start'
   displayName: 'Deploy to Azure Web App'
