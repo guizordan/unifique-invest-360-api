@@ -9,9 +9,7 @@ function routes(
   const customerController = new CustomerController();
 
   fastify.post("/customers", customerController.create);
-  fastify.get("/customers", () => {
-    return { message: "List of customers" };
-  });
+  fastify.get("/customers", customerController.list);
 
   done();
 }

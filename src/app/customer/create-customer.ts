@@ -1,8 +1,8 @@
-import CustomerRepository from "@/core/customer/interfaces/customer.repository";
+import CustomerRepository from "@/core/customer/interfaces/ICustomerRepository";
 import Customer from "@/core/customer/customer.entity";
 import { sendWelcomeEmail } from "./send-welcome-email";
 import { v4 as uuidv4 } from "uuid";
-import CustomerDTO from "@/core/customer/interfaces/customer.dto";
+import CustomerDTO from "@/core/customer/interfaces/CustomerDTO";
 
 export async function createCustomer(
   customerRepository: CustomerRepository,
@@ -20,11 +20,6 @@ export async function createCustomer(
   });
 
   const savedCustomer = await customerRepository.create(newCustomer);
-
-  sendWelcomeEmail({
-    recipient: savedCustomer.email,
-    firstName: savedCustomer.fullName,
-  });
 
   return savedCustomer;
 }

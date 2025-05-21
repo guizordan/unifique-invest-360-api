@@ -1,6 +1,6 @@
 import { DataSource, Repository } from "typeorm";
 import Customer from "@/core/customer/customer.entity";
-import CustomerRepository from "@/core/customer/interfaces/customer.repository";
+import CustomerRepository from "@/core/customer/interfaces/ICustomerRepository";
 import CustomerEntity from "@/core/customer/customer.entity";
 
 export default class TypeormCustomerRepository implements CustomerRepository {
@@ -61,6 +61,11 @@ export default class TypeormCustomerRepository implements CustomerRepository {
   async findById(id: string): Promise<Customer | null> {
     const customerEntity = await this.customerRepository.findOneBy({ id });
     return customerEntity ? this.toDomain(customerEntity) : null;
+  }
+
+  async getCustomers(): Promise<Customer[]> {
+    const customerEntities = await this.customerRepository.find();
+    return customerEntities.map((entity) => this.toDomain(entity));
   }
 
   async destroy(id: string): Promise<undefined> {
