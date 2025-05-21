@@ -41,6 +41,6 @@ steps:
       azureSubscription: "$(azureServiceConnection)"
       appType: "webAppLinux"
       appName: "$(webAppName)"
-      package: "$(System.DefaultWorkingDirectory)/_drop/$(Build.BuildId).zip"
+      package: "$(System.DefaultWorkingDirectory)/_drop/*.zip"
       runtimeStack: "NODE|$(nodeLtsVersion)"
     displayName: "Deploy to Azure Web App"
