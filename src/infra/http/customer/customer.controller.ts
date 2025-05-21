@@ -24,6 +24,7 @@ export class CustomerController {
       reply.status(400).send({ error: error.message });
     }
   }
+
   async list(request: FastifyRequest, reply: FastifyReply): Promise<void> {
     try {
       const customerRepository = new CustomerRepository(initializedDataSource);
