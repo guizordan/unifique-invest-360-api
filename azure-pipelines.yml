@@ -1,21 +1,50 @@
-# Node.js
-# Build a general Node.js project with npm.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
 - main
 
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  # Replace with the name of your Azure Web App
+  webAppName: '360-api'
+  # Replace with the name of your Azure Subscription Service Connection
+  azureServiceConnection: 'Subscription 1 (a7b7fbd9-229d-44b7-8049-2f4cfa6b7bb1)'
+  # Set the Node.js LTS version you want to use for the runtime stack
+  nodeLtsVersion: '20-lts' # Or '18-lts', '22-lts', etc., depending on your needs and what Azure supports.
+
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: '22.x'
-  displayName: 'Install Node.js'
+    versionSpec: '$(nodeLtsVersion.split("-")[0]).x' # Extracts major version (e.g., '20.x' from '20-lts')
+  displayName: 'Install Node.js LTS'
 
 - script: |
     npm install
-    npm run build
+    npm run build # Assuming you have a 'build' script in your package.json
   displayName: 'npm install and build'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+  displayName: 'Archive project files'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
+    publishLocation: 'Container'
+  displayName: 'Publish Build Artifacts'
+
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: '$(azureServiceConnection)'
+    appType: 'webAppLinux' # Use 'webAppWindows' if deploying to Windows App Service
+    appName: '$(webAppName)'
+    package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    runtimeStack: 'NODE|$(nodeLtsVersion)' # This sets the Node.js runtime version on the Azure App Service
+    # startUpCommand: 'npm start' # Optional: Add your custom startup command if needed (e.g., 'node server.js' or 'pm2 start ecosystem.config.js --no-daemon')
+  displayName: 'Deploy to Azure Web App'
