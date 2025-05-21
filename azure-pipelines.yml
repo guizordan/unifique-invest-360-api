@@ -1,51 +1,46 @@
 trigger:
-- main
+  - main
 
 pool:
   vmImage: ubuntu-latest
 
 variables:
-  # Replace with the name of your Azure Web App
-  webAppName: '360-api'
-  # Replace with the name of your Azure Subscription Service Connection
-  azureServiceConnection: 'Subscription 1 (a7b7fbd9-229d-44b7-8049-2f4cfa6b7bb1)'
-  # Set the Node.js LTS version you want to use for the runtime stack
-  nodeLtsVersion: '22-lts' # Or '18-lts', '22-lts', etc., depending on your needs and what Azure supports.
+  webAppName: "360-api"
+  azureServiceConnection: "Subscription 1 (a7b7fbd9-229d-44b7-8049-2f4cfa6b7bb1)"
+  nodeLtsVersion: "22-lts"
 
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '$(nodeLtsVersion.split("-")[0]).x' # Extracts major version (e.g., '20.x' from '20-lts')
-  displayName: 'Install Node.js LTS'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "22.x"
+    displayName: "Install Node.js LTS"
 
-- script: |
-    npm install
-    npm run build # Assuming you have a 'build' script in your package.json
-  displayName: 'npm install and build'
+  - script: |
+      npm install
+      npm run build
+    displayName: "npm install and build"
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    replaceExistingArchive: true
-  displayName: 'Archive project files'
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
+      includeRootFolder: false
+      archiveType: "zip"
+      archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+      replaceExistingArchive: true
+    displayName: "Archive project files"
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: 'drop'
-    publishLocation: 'Container'
-  displayName: 'Publish Build Artifacts'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: "$(Build.ArtifactStagingDirectory)"
+      artifactName: "drop"
+      publishLocation: "Container"
+    displayName: "Publish Build Artifacts"
 
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: '$(azureServiceConnection)'
-    appType: 'webAppLinux'
-    appName: '$(webAppName)'
-    # Corrected path: point to the downloaded artifact
-    package: '$(System.DefaultWorkingDirectory)/_drop/$(Build.BuildId).zip'
-    runtimeStack: 'NODE|$(nodeLtsVersion)'
-    # startUpCommand: 'npm start'
-  displayName: 'Deploy to Azure Web App'
+  - task: AzureWebApp@1
+    inputs:
+      azureSubscription: "$(azureServiceConnection)"
+      appType: "webAppLinux"
+      appName: "$(webAppName)"
+      package: "$(System.DefaultWorkingDirectory)/_drop/$(Build.BuildId).zip"
+      runtimeStack: "NODE|$(nodeLtsVersion)"
+    displayName: "Deploy to Azure Web App"
