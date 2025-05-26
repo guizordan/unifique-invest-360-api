@@ -1,35 +1,70 @@
 trigger:
-  - main
+  - main # Dispara a pipeline em cada push para a branch main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: ubuntu-latest # Usando uma imagem Ubuntu para agilidade e custo-benefício
 
 variables:
-  nodeLtsVersion: "22-lts"
+  nodeLtsVersion: "22.x" # Especifica a versão LTS do Node.js
+  # Definimos uma variável para o nome do artefato para facilitar a manutenção
+  # Pode ser usado na Release Pipeline como $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+  # Ou podemos usar um nome fixo como 'web-app.zip' para o pacote final
+  artifactName: "drop" # Mantendo 'drop' como o nome do artefato para compatibilidade com sua release atual
 
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "22.x"
+      versionSpec: "$(nodeLtsVersion)" # Usa a variável para a versão do Node.js
     displayName: "Install Node.js LTS"
 
-  - script: |
-      npm install
-      npm run build
-    displayName: "npm install and build"
+  # - script: |
+  #     npm install
+  #     npm run build
+  #   displayName: "npm install and build"
+  # Melhorando a legibilidade e controle com tarefas separadas
+
+  - task: Npm@1
+    displayName: "Install Dependencies"
+    inputs:
+      command: "install" # Comando para instalar as dependências
+      # clean: true # Opcional: Garante uma instalação limpa (pode adicionar tempo)
+
+  - task: Npm@1
+    displayName: "Build TypeScript Project"
+    inputs:
+      command: "custom"
+      customCommand: "run build" # Executa 'npm run build' para compilar para 'dist'
+
+  # AQUI ESTÁ A MUDANÇA PRINCIPAL:
+  # Em vez de arquivar TUDO, vamos copiar apenas o que é necessário para a pasta de staging
+  # e depois arquivar APENAS essa pasta.
+
+  - task: CopyFiles@2
+    displayName: "Copy Production Files to Staging"
+    inputs:
+      contents: |
+        dist/** # Copia todo o conteúdo da pasta dist (código JS compilado)
+        package.json         # Necessário para que o App Service possa entender o projeto
+        package-lock.json    # Garante que as dependências sejam resolvidas corretamente
+        .env.example         # Se você tiver um arquivo .env de exemplo para referência
+        # Adicione outros arquivos/pastas necessários em produção aqui, ex:
+        # public/** # Se houver arquivos estáticos ou templates
+        # views/**
+      targetFolder: "$(Build.ArtifactStagingDirectory)" # Copia para a pasta de staging
 
   - task: ArchiveFiles@2
+    displayName: "Archive Production Files"
     inputs:
-      rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
-      includeRootFolder: false
+      rootFolderOrFile: "$(Build.ArtifactStagingDirectory)" # Agora, o ZIP é criado A PARTIR do staging
+      includeRootFolder: false # Não inclui a pasta 'ArtifactStagingDirectory' dentro do ZIP
       archiveType: "zip"
-      archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip"
+      # archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip" # Pode usar o ID da build
+      archiveFile: "$(Build.ArtifactStagingDirectory)/app-release.zip" # Ou um nome fixo para o pacote final
       replaceExistingArchive: true
-    displayName: "Archive project files"
 
   - task: PublishBuildArtifacts@1
+    displayName: "Publish Deployment Artifact"
     inputs:
-      pathToPublish: "$(Build.ArtifactStagingDirectory)"
-      artifactName: "drop"
+      pathToPublish: "$(Build.ArtifactStagingDirectory)" # Publica o ZIP que acabamos de criar
+      artifactName: "$(artifactName)" # Usa a variável para o nome do artefato
       publishLocation: "Container"
-    displayName: "Publish Build Artifacts"
